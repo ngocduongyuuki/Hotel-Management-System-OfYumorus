@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Sạn Yumorus - Đặt Phòng & Quản Lý</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        warm: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            deep: '#4a1d0d',
+                            accent: '#c05621',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #faf6f0;
+            color: #2d2623;
+        }
+        .bg-warm-gradient {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2411 50%, #78350f 100%);
+        }
+        .bg-card-gradient {
+            background: linear-gradient(180deg, #ffffff 0%, #fffbf7 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-warm-gradient text-amber-50 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('booking')">
+                    <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 to-amber-200 flex items-center justify-center text-warm-deep font-black text-2xl shadow-md border-2 border-amber-300">
+                        Y
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-amber-100 to-amber-400">YUMORUS</span>
+                        <p class="text-[10px] tracking-widest text-amber-200/80 uppercase font-light">Luxury Hotel & Sunset Suite</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex space-x-1 items-center bg-black/20 p-1.5 rounded-xl backdrop-blur-md border border-amber-500/20">
+                    <button onclick="switchTab('booking')" id="nav-booking" class="px-4 py-2 rounded-lg text-sm font-medium transition-all text-amber-100 hover:bg-amber-800/40">
+                        <i data-lucide="calendar" class="inline w-4 h-4 mr-1.5 mb-0.5"></i>Đặt Phòng
+                    </button>
+
+                    <button onclick="switchTab('my-bookings')" id="nav-my-bookings" class="px-4 py-2 rounded-lg text-sm font-medium transition-all text-amber-100 hover:bg-amber-800/40 relative">
+                        <i data-lucide="bookmark-check" class="inline w-4 h-4 mr-1.5 mb-0.5"></i>Đơn Của Tôi
+                        <span id="user-booking-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </button>
+
+                    <button onclick="switchTab('diagram')" id="nav-diagram" class="px-4 py-2 rounded-lg text-sm font-medium transition-all text-amber-100 hover:bg-amber-800/40">
+                        <i data-lucide="help-circle" class="inline w-4 h-4 mr-1.5 mb-0.5"></i>Quy Trình Đặt Phòng
+                    </button>
+                </nav>
+
+                <!-- Auth Section -->
+                <div class="flex items-center space-x-3">
+                    <div id="user-info" class="hidden flex items-center space-x-2 bg-amber-900/40 px-3 py-1.5 rounded-lg border border-amber-500/30 text-xs">
+                        <i data-lucide="user" class="w-4 h-4 text-amber-300"></i>
+                        <span id="user-name-display" class="font-semibold text-amber-100">Khách</span>
+                        <span id="user-role-badge" class="bg-amber-600/60 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold text-amber-200">User</span>
+                    </div>
+
+                    <button id="btn-login" onclick="openLoginModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-warm-deep font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md flex items-center">
+                        <i data-lucide="log-in" class="w-4 h-4 mr-1.5"></i> Đăng Nhập / Admin
+                    </button>
+
+                    <button id="btn-admin-panel" onclick="switchTab('admin')" class="hidden bg-amber-700/80 hover:bg-amber-600 text-white px-3.5 py-2 rounded-xl text-sm font-semibold transition border border-amber-400/40 items-center">
+                        <i data-lucide="shield-check" class="w-4 h-4 mr-1.5 text-amber-300"></i> Quản Lý (Admin)
+                    </button>
+
+                    <button id="btn-logout" onclick="logout()" class="hidden bg-red-900/50 hover:bg-red-800 text-red-200 px-3 py-2 rounded-xl text-sm font-medium transition border border-red-500/30">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: DAT PHONG (CUSTOMER BOOKING) -->
+        <section id="tab-booking" class="tab-content space-y-8">
+            <!-- Banner Welcome -->
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl bg-warm-gradient p-8 md:p-12 text-white">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#fbbf24_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Trải nghiệm nghỉ dưỡng đẳng cấp</span>
+                    <h1 class="text-3xl md:text-5xl font-extrabold mt-3 mb-4 leading-tight">Yumorus Hotel & Resort</h1>
+                    <p class="text-amber-100/90 text-sm md:text-base leading-relaxed">
+                        Tận hưởng không gian ấm cúng, sang trọng bậc nhất với góc nhìn hoàng hôn rực rỡ. Đặt phòng linh hoạt theo giờ, qua đêm hoặc ngày lễ với chính sách cọc và duyệt phòng minh bạch.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filter & Search Bar -->
+            <div class="bg-white p-6 rounded-2xl shadow-xl border border-amber-100 space-y-4">
+                <div class="flex items-center space-x-2 text-amber-800 font-bold border-b border-amber-100 pb-3">
+                    <i data-lucide="search" class="w-5 h-5 text-amber-600"></i>
+                    <h2>Tìm & Kiểm Tra Khung Giờ Phòng Trống</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Hình thức thuê</label>
+                        <select id="search-type" onchange="calculatePricesPreview()" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                            <option value="hourly">Theo Giờ (Hourly)</option>
+                            <option value="daily" selected>Theo Ngày (Daily)</option>
+                            <option value="overnight">Qua Đêm (Overnight: 21h - 08h)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Thời Gian Nhận Phòng</label>
+                        <input type="datetime-local" id="search-checkin" onchange="calculatePricesPreview()" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Thời Gian Trả Phòng</label>
+                        <input type="datetime-local" id="search-checkout" onchange="calculatePricesPreview()" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                    </div>
+
+                    <div class="flex items-end">
+                        <div class="w-full flex items-center justify-between bg-amber-100/70 p-2.5 rounded-xl border border-amber-300">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="search-is-holiday" onchange="calculatePricesPreview()" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 accent-amber-600">
+                                <label for="search-is-holiday" class="text-xs font-bold text-amber-900 cursor-pointer">Dịp Ngày Lễ (+20-30%)</label>
+                            </div>
+                            <span class="text-[10px] text-amber-700 bg-amber-200 px-2 py-0.5 rounded-full font-bold">Phụ thu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List of Rooms -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-amber-950 flex items-center">
+                        <i data-lucide="bed" class="w-6 h-6 mr-2 text-amber-600"></i> Danh Sách Hạng Phòng
+                    </h2>
+                    <span class="text-xs text-amber-800 bg-amber-100 px-3 py-1 rounded-full font-semibold">* Tiền cọc giữ phòng từ 10% - 30% tùy loại phòng</span>
+                </div>
+
+                <div id="room-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Room Cards Inject Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: DON DAT CUA TOI (MY BOOKINGS) -->
+        <section id="tab-my-bookings" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-amber-100">
+                <div class="flex items-center justify-between border-b border-amber-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-amber-950 flex items-center">
+                            <i data-lucide="bookmark-check" class="w-6 h-6 mr-2 text-amber-600"></i> Đơn Đặt Phòng Của Tôi
+                        </h2>
+                        <p class="text-xs text-stone-500 mt-1">Theo dõi trạng thái duyệt đơn từ Admin và thực hiện hủy phòng linh hoạt theo quy định.</p>
+                    </div>
+                </div>
+
+                <!-- Alert Notice for Cancellation Policy -->
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl mb-6 text-xs text-amber-900 space-y-1.5">
+                    <p class="font-bold text-amber-950 flex items-center">
+                        <i data-lucide="shield-alert" class="w-4 h-4 mr-1.5 text-amber-600"></i> Quy Định Duyệt & Hủy Cọc Tại Yumorus:
+                    </p>
+                    <p>• <b>Trạng thái CHỜ DUYỆT (Pending):</b> Khi vừa đặt phòng, đơn đặt sẽ chờ Admin xác nhận. Quý khách được quyền hủy phòng và <u>được HOÀN 100% tiền cọc</u>.</p>
+                    <p>• <b>Trạng thái ĐÃ DUYỆT (Confirmed):</b> Khi Admin đã duyệt phòng, nếu hủy sát giờ (< 24 tiếng trước thời điểm nhận phòng), quý khách sẽ <u>mất 100% tiền cọc đã đặt</u>.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-amber-100/60 text-amber-950 text-xs uppercase tracking-wider">
+                                <th class="p-3 rounded-l-lg">Mã Đơn / Khách</th>
+                                <th class="p-3">Phòng</th>
+                                <th class="p-3">Giờ Nhận / Trả</th>
+                                <th class="p-3">Thanh Toán / Cọc</th>
+                                <th class="p-3">Trạng Thái Admin</th>
+                                <th class="p-3 rounded-r-lg text-right">Thao Tác Hủy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-bookings-list" class="divide-y divide-amber-100 text-sm">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: QUAN LY NHAN VIEN (ADMIN PANEL) -->
+        <section id="tab-admin" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-amber-100 space-y-6">
+                <!-- Admin Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-amber-100 pb-4 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-amber-950 flex items-center">
+                            <i data-lucide="shield-check" class="w-6 h-6 mr-2 text-amber-600"></i> Bảng Quản Lý Dành Cho Nhân Viên (Admin)
+                        </h2>
+                        <p class="text-xs text-stone-500 mt-1">Duyệt đơn đặt phòng của khách, kiểm tra trùng lịch, cập nhật trạng thái & quản lý CSDL.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-semibold bg-green-100 text-green-800 px-3 py-1 rounded-full">Tài khoản: Admin Active</span>
+                        <button onclick="resetToDefaultData()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded-lg transition font-medium">Reset Demo Data</button>
+                    </div>
+                </div>
+
+                <!-- Admin Tabs Submenu -->
+                <div class="flex space-x-3 border-b border-stone-200 text-sm font-bold">
+                    <button id="admin-subtab-bookings-btn" onclick="switchAdminSubtab('bookings')" class="pb-2 text-amber-700 border-b-2 border-amber-600">
+                        Duyệt Đơn Đặt Phòng
+                    </button>
+                    <button id="admin-subtab-rooms-btn" onclick="switchAdminSubtab('rooms')" class="pb-2 text-stone-500 hover:text-amber-700">
+                        Quản Lý Tình Trạng & Giá Phòng
+                    </button>
+                    <button id="admin-subtab-db-btn" onclick="switchAdminSubtab('db')" class="pb-2 text-stone-500 hover:text-amber-700">
+                        Xem CSDL Khách Hàng
+                    </button>
+                </div>
+
+                <!-- Subtab 1: Bookings Management -->
+                <div id="admin-subtab-bookings" class="space-y-4">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-amber-100/60 text-amber-950 text-xs uppercase tracking-wider">
+                                    <th class="p-3 rounded-l-lg">Mã Đơn / Khách</th>
+                                    <th class="p-3">Tên Phòng</th>
+                                    <th class="p-3">Thời Gian Nhận / Trả</th>
+                                    <th class="p-3">Hình Thức</th>
+                                    <th class="p-3">Tổng Tiền / Cọc</th>
+                                    <th class="p-3">Trạng Thái</th>
+                                    <th class="p-3 rounded-r-lg text-right">Thao Tác Duyệt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-bookings-table" class="divide-y divide-amber-100 text-sm">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Subtab 2: Room Status Management -->
+                <div id="admin-subtab-rooms" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="admin-room-status-grid">
+                        <!-- Dynamic status edit -->
+                    </div>
+                </div>
+
+                <!-- Subtab 3: Database View -->
+                <div id="admin-subtab-db" class="hidden space-y-4">
+                    <div class="p-4 bg-stone-900 text-amber-300 rounded-xl font-mono text-xs overflow-x-auto">
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-stone-800">
+                            <span class="font-bold text-white">DATABASE DỮ LIỆU LƯU TRỮ (LOCALSTORAGE JSON)</span>
+                            <span class="text-stone-400">Database Name: yumorus_hotel_db</span>
+                        </div>
+                        <pre id="admin-db-json" class="whitespace-pre-wrap"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SO DO TUONG TAC SYSTEM DIAGRAM -->
+        <section id="tab-diagram" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-amber-100">
+                <div class="border-b border-amber-100 pb-4 mb-6">
+                    <h2 class="text-2xl font-bold text-amber-950 flex items-center">
+                        <i data-lucide="compass" class="w-6 h-6 mr-2 text-amber-600"></i> Quy Trình & Cách Thức Đặt Phòng Khách Sạn Yumorus
+                    </h2>
+                    <p class="text-xs text-stone-500 mt-1">
+                        Hướng dẫn từng bước giúp khách hàng tìm kiếm, đặt phòng, đặt cọc và quản lý chuyến đi nhanh chóng và dễ dàng.
+                    </p>
+                </div>
+
+                <!-- Graphical Flow Chart -->
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-center text-xs font-semibold">
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center shadow"><i data-lucide="user"></i></div>
+                        <span class="text-amber-950 font-bold text-sm">Bước 1: Khách Hàng</span>
+                        <p class="text-[11px] text-stone-500 font-normal">Chọn hạng phòng yêu thích, hình thức thuê (giờ/ngày/đêm) & ngày giờ mong muốn.</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-100/50 border border-amber-200 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-700 text-white flex items-center justify-center shadow"><i data-lucide="layout"></i></div>
+                        <span class="text-amber-950 font-bold text-sm">Bước 2: Giao Diện Hỗ Trợ</span>
+                        <p class="text-[11px] text-stone-500 font-normal">Xem hình ảnh, mô tả view hoàng hôn, bảng giá tự động & tỷ lệ cọc (10-30%).</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-800 text-white flex items-center justify-center shadow"><i data-lucide="calendar-check"></i></div>
+                        <span class="text-amber-950 font-bold text-sm">Bước 3: Đặt Cọc & Tạo Đơn</span>
+                        <p class="text-[11px] text-stone-500 font-normal">Đơn được tạo ở trạng thái <b>Chờ Duyệt</b>. Khách được hoàn 100% cọc nếu hủy ở bước này.</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-100/50 border border-amber-200 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-900 text-white flex items-center justify-center shadow"><i data-lucide="shield-check"></i></div>
+                        <span class="text-amber-950 font-bold text-sm">Bước 4: Admin Duyệt Đơn</span>
+                        <p class="text-[11px] text-stone-500 font-normal">Admin kiểm tra đơn và bấm <b>Duyệt Phòng</b>. Đơn chuyển sang <b>Đã Duyệt</b> (Áp dụng trừ cọc khi hủy).</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center shadow"><i data-lucide="credit-card"></i></div>
+                        <span class="text-amber-950 font-bold text-sm">Bước 5: Khóa Lịch Phòng</span>
+                        <p class="text-[11px] text-stone-500 font-normal">Hệ thống khóa khung giờ. Khách sau vẫn có thể đặt khung giờ tiếp theo sau khi bạn trả phòng.</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-900 text-amber-100 border border-amber-700 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-10 h-10 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center shadow font-bold"><i data-lucide="database"></i></div>
+                        <span class="text-amber-200 font-bold text-sm">Bước 6: Lưu Đơn & Check-in</span>
+                        <p class="text-[11px] text-amber-200/70 font-normal">Thông tin được lưu trữ tại CSDL, lễ tân chuẩn bị phòng chu đáo đón khách đến nghỉ dưỡng.</p>
+                    </div>
+                </div>
+
+                <!-- Interaction Steps Table -->
+                <div class="mt-8">
+                    <h3 class="font-bold text-amber-900 text-sm mb-3">Các Quy Định & Lưu Ý Quan Trọng Khi Đặt Phòng:</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start space-x-3">
+                            <span class="bg-amber-600 text-white font-bold px-2 py-0.5 rounded text-[10px]">1. Linh hoạt khung giờ</span>
+                            <p class="text-stone-700">Khách hàng có thể đặt phòng theo giờ, qua đêm hoặc theo ngày. Ví dụ: Khách A đặt phòng từ 14:00 - 18:00, phòng sẽ tự động sẵn sàng để Khách B đặt khung giờ tiếp theo từ 18:30 trở đi mà không bị nghẽn lịch.</p>
+                        </div>
+
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start space-x-3">
+                            <span class="bg-amber-800 text-white font-bold px-2 py-0.5 rounded text-[10px]">2. Quy trình cọc & Duyệt phòng</span>
+                            <p class="text-stone-700">Khi đặt phòng thành công, đơn đặt ở trạng thái <b>Chờ Duyệt (Pending)</b>. Nếu bạn đổi ý và bấm Hủy lúc này, bạn sẽ <b>được hoàn 100% tiền cọc</b>. Khi Admin xác nhận <b>Đã Duyệt (Confirmed)</b>, chính sách hủy cọc mất tiền (sát giờ < 24h) mới chính thức áp dụng.</p>
+                        </div>
+
+                        <div class="p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-start space-x-3">
+                            <span class="bg-amber-900 text-white font-bold px-2 py-0.5 rounded text-[10px]">3. Nhân viên hỗ trợ</span>
+                            <p class="text-stone-700">Đội ngũ nhân viên lễ tân trực tuyến kiểm tra đơn hàng từ CSDL, đối soát khoản cọc và xác nhận duyệt đơn để chuẩn bị không gian nghỉ dưỡng tốt nhất trước khi khách tới nhận phòng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: DAT PHONG CHI TIET & THANH TOAN COC -->
+    <div id="booking-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-amber-200 relative my-8">
+            <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700 p-1">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 border-b border-amber-100 pb-4 mb-4">
+                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                    <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 id="modal-room-title" class="text-xl font-extrabold text-amber-950">Đặt Phòng Hoàng Hôn</h3>
+                    <p class="text-xs text-amber-700 font-medium">Yumorus Luxury Hotel</p>
+                </div>
+            </div>
+
+            <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="modal-room-id">
+
+                <!-- Room Details Preview inside Modal -->
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-2">
+                    <div class="flex justify-between font-bold text-amber-900 text-sm">
+                        <span>Tỷ lệ cọc giữ phòng: <span id="modal-deposit-rate" class="text-amber-600">30%</span></span>
+                        <span id="modal-holiday-tag" class="hidden bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px]">Phụ thu ngày lễ applied</span>
+                    </div>
+                    <p id="modal-room-desc" class="text-stone-600 text-[11px]"></p>
+                </div>
+
+                <!-- Schedule Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-amber-900 mb-1">Họ & Tên Khách Hàng *</label>
+                        <input type="text" id="cust-name" required placeholder="Nguyễn Văn A" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-amber-900 mb-1">Số Điện Thoại / Zalo *</label>
+                        <input type="tel" id="cust-phone" required placeholder="0901234567" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-amber-900 mb-1">Thời Gian Nhận Phòng *</label>
+                        <input type="datetime-local" id="modal-checkin" required onchange="updateModalCalculation()" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-amber-900 mb-1">Thời Gian Trả Phòng *</label>
+                        <input type="datetime-local" id="modal-checkout" required onchange="updateModalCalculation()" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <!-- Existing Slots Warning Box -->
+                <div id="modal-occupied-slots-box" class="hidden bg-red-50 border border-red-200 p-3 rounded-xl">
+                    <p class="font-bold text-red-800 text-[11px] flex items-center">
+                        <i data-lucide="clock" class="w-3.5 h-3.5 mr-1"></i> Khung giờ phòng này đã có khách đặt:
+                    </p>
+                    <ul id="modal-occupied-slots-list" class="list-disc list-inside text-[11px] text-red-700 mt-1 font-mono"></ul>
+                </div>
+
+                <!-- Calculation Summary -->
+                <div class="bg-warm-gradient text-white p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between text-amber-200">
+                        <span>Tổng chi phí phòng dự tính:</span>
+                        <span id="modal-calc-total" class="font-bold text-white text-sm">0 VNĐ</span>
+                    </div>
+                    <div class="flex justify-between text-amber-300 font-extrabold text-base border-t border-amber-700/60 pt-2">
+                        <span>TIỀN CỌC CẦN THANH TOÁN NOW:</span>
+                        <span id="modal-calc-deposit" class="text-amber-400">0 VNĐ</span>
+                    </div>
+                </div>
+
+                <!-- Payment Method Mockup -->
+                <div class="border border-amber-200 rounded-xl p-3 bg-stone-50 space-y-2">
+                    <p class="font-bold text-amber-900 text-xs">Phương Thức Thanh Toán Cọc Giả Lập:</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="border rounded-lg p-2 flex items-center space-x-2 bg-white cursor-pointer hover:border-amber-500">
+                            <input type="radio" name="pay-method" value="qr" checked class="accent-amber-600">
+                            <span class="text-xs font-semibold">Mã QR Chuyển Khoản</span>
+                        </label>
+                        <label class="border rounded-lg p-2 flex items-center space-x-2 bg-white cursor-pointer hover:border-amber-500">
+                            <input type="radio" name="pay-method" value="card" class="accent-amber-600">
+                            <span class="text-xs font-semibold">Thẻ ATM / Visa</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-extrabold py-3 rounded-xl shadow-lg text-sm transition">
+                        Xác Nhận Đặt Phòng (Gửi Đơn Chờ Duyệt)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DANG NHAP KHACH HANG & ADMIN -->
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 relative">
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 text-stone-400 hover:text-stone-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-amber-600 text-white flex items-center justify-center font-black text-xl mx-auto mb-2 shadow">
+                    Y
+                </div>
+                <h3 class="text-xl font-bold text-amber-950">Đăng Nhập Yumorus</h3>
+                <p class="text-xs text-stone-500">Đăng nhập tài khoản Quản lý hoặc Khách Hàng</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-amber-900 mb-1">Tên Đăng Nhập</label>
+                    <input type="text" id="login-username" required placeholder="Nhập tên đăng nhập" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-amber-900 mb-1">Mật Khẩu</label>
+                    <input type="password" id="login-password" required placeholder="Nhập mật khẩu" class="w-full border border-amber-200 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+
+                <button type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2.5 rounded-xl shadow transition text-sm">
+                    Đăng Nhập
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DATA INITIALIZATION & CONSTANTS
+        const DEFAULT_ROOMS = [
+            {
+                id: 'room-1',
+                name: 'Phòng Đơn (Single Room)',
+                type: 'Đơn',
+                depositRate: 10, // 10%
+                priceHourly: 120000,
+                priceDaily: 450000,
+                priceOvernight: 300000,
+                description: 'Phòng nhỏ gọn tinh tế, thích hợp cho khách du lịch cá nhân hoặc công tác ngắn ngày. Đầy đủ wifi, minibar, điều hòa.',
+                image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            },
+            {
+                id: 'room-2',
+                name: 'Phòng Đơn Cao Cấp (Deluxe Single)',
+                type: 'Đơn Cao Cấp',
+                depositRate: 10, // 10%
+                priceHourly: 160000,
+                priceDaily: 600000,
+                priceOvernight: 420000,
+                description: 'Không gian rộng rãi hơn với cửa sổ thoáng mát, giường ngủ Premium King-size, bàn làm việc gỗ tự nhiên ấm áp.',
+                image: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            },
+            {
+                id: 'room-3',
+                name: 'Phòng Đôi (Double Room)',
+                type: 'Đôi',
+                depositRate: 15, // 15%
+                priceHourly: 200000,
+                priceDaily: 800000,
+                priceOvernight: 550000,
+                description: 'Thiết kế tông màu trầm ấm, giường đôi ấm cúng dành cho 2 người. Trang bị bồn tắm hiện đại và Smart TV.',
+                image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            },
+            {
+                id: 'room-4',
+                name: 'Phòng Đôi Cao Cấp (Deluxe Double)',
+                type: 'Đôi Cao Cấp',
+                depositRate: 15, // 15%
+                priceHourly: 280000,
+                priceDaily: 1100000,
+                priceOvernight: 750000,
+                description: 'Ban công rộng rãi tầm nhìn thoáng đãng, nội thất nhập khẩu sang trọng, phục vụ trà & cà phê thượng hạng miễn phí.',
+                image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            },
+            {
+                id: 'room-5',
+                name: 'Phòng Gia Đình (Family Suite)',
+                type: 'Gia Đình',
+                depositRate: 20, // 20%
+                priceHourly: 400000,
+                priceDaily: 1600000,
+                priceOvernight: 1100000,
+                description: 'Căn hộ gia đình 2 giường lớn, sofa thư giãn, khu vực pantry nhỏ. Phù hợp cho nhóm gia đình từ 4-5 người.',
+                image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            },
+            {
+                id: 'room-6',
+                name: 'Phòng Hoàng Hôn (Sunset View Suite)',
+                type: 'Hoàng Hôn',
+                depositRate: 30, // 30%
+                priceHourly: 600000,
+                priceDaily: 2500000,
+                priceOvernight: 1800000,
+                description: 'Hạng phòng Signature độc bản của Yumorus với góc View 180 độ trọn vẹn ngắm hoàng hôn rực rỡ. Bồn tắm ngâm chân dát vàng, rượu vang tặng kèm.',
+                image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=80',
+                status: 'Available'
+            }
+        ];
+
+        // STATE APP
+        let rooms = [];
+        let bookings = [];
+        let currentUser = null; // { name, role: 'admin'|'customer' }
+
+        // LOCALSTORAGE MANAGERS
+        function initData() {
+            const storedRooms = localStorage.getItem('yumorus_rooms');
+            const storedBookings = localStorage.getItem('yumorus_bookings');
+            const storedUser = localStorage.getItem('yumorus_user');
+
+            if (storedRooms) {
+                rooms = JSON.parse(storedRooms);
+            } else {
+                rooms = [...DEFAULT_ROOMS];
+                saveRooms();
+            }
+
+            if (storedBookings) {
+                bookings = JSON.parse(storedBookings);
+            } else {
+                // Initial Sample Booking Data
+                bookings = [
+                    {
+                        id: 'YUM-8821',
+                        roomId: 'room-6',
+                        roomName: 'Phòng Hoàng Hôn (Sunset View Suite)',
+                        customerName: 'Trần Văn Nam',
+                        customerPhone: '0988123456',
+                        bookingType: 'hourly',
+                        checkIn: '2026-09-20T14:00',
+                        checkOut: '2026-09-20T18:00',
+                        totalPrice: 2400000,
+                        depositPaid: 720000,
+                        status: 'Pending', // Pending (Chờ duyệt), Approved (Đã duyệt), Cancelled (Đã hủy)
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                saveBookings();
+            }
+
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+            }
+
+            // Set default datetimes for search bar
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            document.getElementById('search-checkin').value = formatDateForInput(now);
+            document.getElementById('search-checkout').value = formatDateForInput(tomorrow);
+
+            updateUserUI();
+            renderRooms();
+            renderMyBookings();
+            renderAdminView();
+            lucide.createIcons();
+        }
+
+        function saveRooms() {
+            localStorage.setItem('yumorus_rooms', JSON.stringify(rooms));
+        }
+
+        function saveBookings() {
+            localStorage.setItem('yumorus_bookings', JSON.stringify(bookings));
+        }
+
+        function saveUser() {
+            localStorage.setItem('yumorus_user', JSON.stringify(currentUser));
+        }
+
+        function resetToDefaultData() {
+            if (confirm('Bạn có chắc muốn Reset toàn bộ dữ liệu demo ban đầu?')) {
+                localStorage.removeItem('yumorus_rooms');
+                localStorage.removeItem('yumorus_bookings');
+                location.reload();
+            }
+        }
+
+        function formatDateForInput(date) {
+            const pad = (n) => n < 10 ? '0' + n : n;
+            return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':00';
+        }
+
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+        }
+
+        // UI SWITCHER
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            if (tabId === 'my-bookings') renderMyBookings();
+            if (tabId === 'admin') renderAdminView();
+        }
+
+        function switchAdminSubtab(subId) {
+            document.getElementById('admin-subtab-bookings').classList.add('hidden');
+            document.getElementById('admin-subtab-rooms').classList.add('hidden');
+            document.getElementById('admin-subtab-db').classList.add('hidden');
+
+            document.getElementById(`admin-subtab-${subId}`).classList.remove('hidden');
+
+            if (subId === 'db') {
+                document.getElementById('admin-db-json').textContent = JSON.stringify({ rooms, bookings }, null, 2);
+            }
+        }
+
+        // AUTHENTICATION LOGIC
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+
+            if (u === 'admin' && p === '123') {
+                currentUser = { name: 'Quản Lý Yumorus', role: 'admin' };
+                alert('Đăng nhập thành công với quyền Nhân Viên Quản Lý!');
+            } else {
+                currentUser = { name: u || 'Khách Hàng', role: 'customer' };
+                alert(`Chào mừng ${currentUser.name} đến với Yumorus Hotel!`);
+            }
+
+            saveUser();
+            updateUserUI();
+            closeLoginModal();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('yumorus_user');
+            updateUserUI();
+            switchTab('booking');
+            alert('Đã đăng xuất.');
+        }
+
+        function updateUserUI() {
+            const userInfo = document.getElementById('user-info');
+            const btnLogin = document.getElementById('btn-login');
+            const btnAdmin = document.getElementById('btn-admin-panel');
+            const btnLogout = document.getElementById('btn-logout');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const userRoleBadge = document.getElementById('user-role-badge');
+
+            if (currentUser) {
+                userInfo.classList.remove('hidden');
+                userInfo.classList.add('flex');
+                btnLogin.classList.add('hidden');
+                btnLogout.classList.remove('hidden');
+
+                userNameDisplay.textContent = currentUser.name;
+                userRoleBadge.textContent = currentUser.role.toUpperCase();
+
+                if (currentUser.role === 'admin') {
+                    btnAdmin.classList.remove('hidden');
+                    btnAdmin.classList.add('flex');
+                } else {
+                    btnAdmin.classList.add('hidden');
+                }
+            } else {
+                userInfo.classList.add('hidden');
+                btnLogin.classList.remove('hidden');
+                btnAdmin.classList.add('hidden');
+                btnLogout.classList.add('hidden');
+            }
+        }
+
+        // PRICING & OVERLAP CALCULATOR
+        function calculateRoomPrice(room, checkInStr, checkOutStr, bookingType, isHoliday) {
+            if (!checkInStr || !checkOutStr) return { total: 0, deposit: 0 };
+
+            const start = new Date(checkInStr);
+            const end = new Date(checkOutStr);
+
+            let diffHours = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60)));
+            let basePrice = 0;
+
+            if (bookingType === 'hourly') {
+                basePrice = room.priceHourly * diffHours;
+            } else if (bookingType === 'overnight') {
+                basePrice = room.priceOvernight;
+            } else {
+                let diffDays = Math.max(1, Math.ceil(diffHours / 24));
+                basePrice = room.priceDaily * diffDays;
+            }
+
+            if (isHoliday) {
+                basePrice = basePrice * 1.25;
+            }
+
+            const deposit = Math.round(basePrice * (room.depositRate / 100));
+
+            return {
+                total: Math.round(basePrice),
+                deposit: deposit,
+                hours: diffHours
+            };
+        }
+
+        function getRoomOccupiedSlots(roomId) {
+            return bookings.filter(b => b.roomId === roomId && b.status !== 'Cancelled');
+        }
+
+        function checkTimeOverlap(roomId, newInStr, newOutStr) {
+            const newIn = new Date(newInStr).getTime();
+            const newOut = new Date(newOutStr).getTime();
+
+            const existingSlots = getRoomOccupiedSlots(roomId);
+
+            for (let slot of existingSlots) {
+                const existingIn = new Date(slot.checkIn).getTime();
+                const existingOut = new Date(slot.checkOut).getTime();
+
+                if (newIn < existingOut && newOut > existingIn) {
+                    return slot;
+                }
+            }
+            return null;
+        }
+
+        function calculatePricesPreview() {
+            renderRooms();
+        }
+
+        // RENDER ROOM CARDS
+        function renderRooms() {
+            const container = document.getElementById('room-cards-grid');
+            const checkIn = document.getElementById('search-checkin').value;
+            const checkOut = document.getElementById('search-checkout').value;
+            const bookingType = document.getElementById('search-type').value;
+            const isHoliday = document.getElementById('search-is-holiday').checked;
+
+            container.innerHTML = '';
+
+            rooms.forEach(room => {
+                const priceInfo = calculateRoomPrice(room, checkIn, checkOut, bookingType, isHoliday);
+                const occupiedSlots = getRoomOccupiedSlots(room.id);
+                const conflict = checkTimeOverlap(room.id, checkIn, checkOut);
+
+                let badgeHtml = '';
+                if (conflict) {
+                    badgeHtml = `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+                        <i data-lucide="clock" class="w-3 h-3 mr-1"></i> Đã có khách đặt khung giờ chọn
+                    </span>`;
+                } else {
+                    badgeHtml = `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+                        <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i> Khung giờ này còn trống
+                    </span>`;
+                }
+
+                let slotsListHtml = '';
+                if (occupiedSlots.length > 0) {
+                    slotsListHtml = `
+                        <div class="mt-2 p-2 bg-amber-50 rounded-lg text-[11px] border border-amber-200">
+                            <span class="font-bold text-amber-900 block mb-1">Các khung giờ đã được đặt:</span>
+                            <ul class="list-disc list-inside text-stone-600 space-y-0.5">
+                                ${occupiedSlots.map(s => `<li>${formatDisplayDate(s.checkIn)} ➔ ${formatDisplayDate(s.checkOut)} <span class="text-[9px] font-bold ${s.status === 'Approved' ? 'text-green-700' : 'text-yellow-700'}">(${s.status === 'Approved' ? 'Đã duyệt' : 'Chờ duyệt'})</span></li>`).join('')}
+                            </ul>
+                            <p class="text-[10px] text-amber-700 italic mt-1">* Quý khách có thể đặt thời gian tiếp theo sau giờ check-out trên!</p>
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-card-gradient rounded-2xl shadow-md hover:shadow-xl transition border border-amber-100/80 overflow-hidden flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${room.image}" alt="${room.name}" class="w-full h-full object-cover transition transform hover:scale-105 duration-300">
+                            <div class="absolute top-3 right-3">
+                                ${badgeHtml}
+                            </div>
+                            <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-amber-300 px-2.5 py-1 rounded-lg text-xs font-semibold border border-amber-400/30">
+                                Cọc giữ chỗ: ${room.depositRate}%
+                            </div>
+                        </div>
+
+                        <div class="p-5 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-extrabold text-amber-950 text-base leading-snug">${room.name}</h3>
+                            </div>
+
+                            <p class="text-xs text-stone-600 leading-relaxed line-clamp-2">${room.description}</p>
+
+                            <!-- Price Table Breakdown -->
+                            <div class="grid grid-cols-3 gap-1 bg-amber-50/70 p-2 rounded-xl text-[11px] text-stone-700 font-medium">
+                                <div><span class="text-amber-800 font-bold block">Theo Giờ:</span>${formatVND(room.priceHourly)}/h</div>
+                                <div><span class="text-amber-800 font-bold block">Qua Đêm:</span>${formatVND(room.priceOvernight)}</div>
+                                <div><span class="text-amber-800 font-bold block">Theo Ngày:</span>${formatVND(room.priceDaily)}</div>
+                            </div>
+
+                            ${slotsListHtml}
+                        </div>
+                    </div>
+
+                    <div class="p-5 pt-0 border-t border-amber-100/50 mt-2 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-stone-500 uppercase font-bold block">Giá Tạm Tính (${priceInfo.hours}h)</span>
+                            <span class="text-base font-extrabold text-amber-800">${formatVND(priceInfo.total)}</span>
+                            <span class="text-[10px] text-amber-600 block">(Cọc: ${formatVND(priceInfo.deposit)})</span>
+                        </div>
+
+                        <button onclick="openBookingModal('${room.id}')" class="bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center space-x-1">
+                            <span>Đặt Phòng</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        // BOOKING MODAL HANDLER
+        function openBookingModal(roomId) {
+            const room = rooms.find(r => r.id === roomId);
+            if (!room) return;
+
+            document.getElementById('modal-room-id').value = room.id;
+            document.getElementById('modal-room-title').textContent = room.name;
+            document.getElementById('modal-room-desc').textContent = room.description;
+            document.getElementById('modal-deposit-rate').textContent = `${room.depositRate}%`;
+
+            document.getElementById('modal-checkin').value = document.getElementById('search-checkin').value;
+            document.getElementById('modal-checkout').value = document.getElementById('search-checkout').value;
+
+            if (currentUser && currentUser.name !== 'Quản Lý Yumorus') {
+                document.getElementById('cust-name').value = currentUser.name;
+            }
+
+            updateModalCalculation();
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+        }
+
+        function updateModalCalculation() {
+            const roomId = document.getElementById('modal-room-id').value;
+            const room = rooms.find(r => r.id === roomId);
+            if (!room) return;
+
+            const checkIn = document.getElementById('modal-checkin').value;
+            const checkOut = document.getElementById('modal-checkout').value;
+            const bookingType = document.getElementById('search-type').value;
+            const isHoliday = document.getElementById('search-is-holiday').checked;
+
+            const priceInfo = calculateRoomPrice(room, checkIn, checkOut, bookingType, isHoliday);
+
+            document.getElementById('modal-calc-total').textContent = formatVND(priceInfo.total);
+            document.getElementById('modal-calc-deposit').textContent = formatVND(priceInfo.deposit);
+
+            if (isHoliday) {
+                document.getElementById('modal-holiday-tag').classList.remove('hidden');
+            } else {
+                document.getElementById('modal-holiday-tag').classList.add('hidden');
+            }
+
+            const occupiedSlots = getRoomOccupiedSlots(roomId);
+            const occupiedBox = document.getElementById('modal-occupied-slots-box');
+            const occupiedList = document.getElementById('modal-occupied-slots-list');
+
+            if (occupiedSlots.length > 0) {
+                occupiedBox.classList.remove('hidden');
+                occupiedList.innerHTML = occupiedSlots.map(s => `<li>${formatDisplayDate(s.checkIn)} đến ${formatDisplayDate(s.checkOut)}</li>`).join('');
+            } else {
+                occupiedBox.classList.add('hidden');
+            }
+        }
+
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+
+            const roomId = document.getElementById('modal-room-id').value;
+            const room = rooms.find(r => r.id === roomId);
+            const checkIn = document.getElementById('modal-checkin').value;
+            const checkOut = document.getElementById('modal-checkout').value;
+            const custName = document.getElementById('cust-name').value.trim();
+            const custPhone = document.getElementById('cust-phone').value.trim();
+            const bookingType = document.getElementById('search-type').value;
+            const isHoliday = document.getElementById('search-is-holiday').checked;
+
+            if (new Date(checkOut) <= new Date(checkIn)) {
+                alert('Thời gian trả phòng phải sau thời gian nhận phòng!');
+                return;
+            }
+
+            const conflict = checkTimeOverlap(roomId, checkIn, checkOut);
+            if (conflict) {
+                alert(`Khung giờ này đã bị trùng với đơn đặt của người khác (${formatDisplayDate(conflict.checkIn)} - ${formatDisplayDate(conflict.checkOut)}). Vui lòng chọn khung giờ kế tiếp!`);
+                return;
+            }
+
+            const priceInfo = calculateRoomPrice(room, checkIn, checkOut, bookingType, isHoliday);
+
+            // Create Booking with Status Pending (Waiting for Admin approval)
+            const newBooking = {
+                id: 'YUM-' + Math.floor(1000 + Math.random() * 9000),
+                roomId: room.id,
+                roomName: room.name,
+                customerName: custName,
+                customerPhone: custPhone,
+                bookingType: bookingType,
+                checkIn: checkIn,
+                checkOut: checkOut,
+                totalPrice: priceInfo.total,
+                depositPaid: priceInfo.deposit,
+                status: 'Pending', // Pending = Waiting for Admin approval
+                createdAt: new Date().toISOString()
+            };
+
+            bookings.unshift(newBooking);
+            saveBookings();
+
+            if (!currentUser) {
+                currentUser = { name: custName, role: 'customer' };
+                saveUser();
+                updateUserUI();
+            }
+
+            alert(`🎉 ĐẶT PHÒNG THÀNH CÔNG!\n\nMã đơn: ${newBooking.id}\nTiền cọc tạm giữ: ${formatVND(newBooking.depositPaid)}\nTrạng thái: CHỜ ADMIN DUYỆT\n\n📌 Lưu ý: Trong lúc chờ Admin duyệt, quý khách vẫn có thể HỦY PHÒNG và HOÀN 100% TIỀN CỌC.`);
+
+            closeBookingModal();
+            renderRooms();
+            renderMyBookings();
+            switchTab('my-bookings');
+        }
+
+        // MY BOOKINGS & CANCELLATION LOGIC
+        function renderMyBookings() {
+            const tbody = document.getElementById('my-bookings-list');
+            const badge = document.getElementById('user-booking-badge');
+            tbody.innerHTML = '';
+
+            let userBookings = bookings;
+            if (currentUser && currentUser.role !== 'admin') {
+                userBookings = bookings.filter(b => b.customerName.toLowerCase() === currentUser.name.toLowerCase());
+            }
+
+            if (userBookings.length > 0) {
+                badge.classList.remove('hidden');
+                badge.textContent = userBookings.length;
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            if (userBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-stone-400">Bạn chưa có đơn đặt phòng nào.</td></tr>`;
+                return;
+            }
+
+            userBookings.forEach(b => {
+                let statusBadge = '';
+                if (b.status === 'Approved') {
+                    statusBadge = `<span class="bg-green-100 text-green-800 px-2.5 py-1 rounded-full text-xs font-bold border border-green-300">Đã Duyệt (Khóa Cọc)</span>`;
+                } else if (b.status === 'Cancelled') {
+                    statusBadge = `<span class="bg-red-100 text-red-800 px-2.5 py-1 rounded-full text-xs font-bold border border-red-300">Đã Hủy Đơn</span>`;
+                } else {
+                    statusBadge = `<span class="bg-yellow-100 text-yellow-800 px-2.5 py-1 rounded-full text-xs font-bold border border-yellow-300">Chờ Admin Duyệt</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-50/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-mono font-bold text-amber-900">${b.id}<br><span class="text-[10px] text-stone-500 font-normal">${b.customerName} - ${b.customerPhone}</span></td>
+                    <td class="p-3 font-semibold text-stone-800">${b.roomName}</td>
+                    <td class="p-3 text-xs">
+                        <div class="text-amber-900 font-medium"><b>Nhận:</b> ${formatDisplayDate(b.checkIn)}</div>
+                        <div class="text-stone-600"><b>Trả:</b> ${formatDisplayDate(b.checkOut)}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="font-bold text-stone-800">${formatVND(b.totalPrice)}</div>
+                        <div class="text-xs text-amber-700 font-semibold">Cọc: ${formatVND(b.depositPaid)}</div>
+                    </td>
+                    <td class="p-3">${statusBadge}</td>
+                    <td class="p-3 text-right">
+                        ${b.status !== 'Cancelled' ? `
+                            <button onclick="cancelBooking('${b.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                                Hủy Phòng
+                            </button>
+                        ` : '<span class="text-stone-400 text-xs italic">Đã xử lý</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // CANCELLATION LOGIC DEPENDING ON STATUS
+        function cancelBooking(bookingId) {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (!booking) return;
+
+            let msg = `⚠️ HỦY ĐẶT PHÒNG [MÃ ĐƠN: ${booking.id}]\n\n`;
+
+            if (booking.status === 'Pending') {
+                // Pending status -> 100% Refundable
+                msg += `✅ Đơn phòng của bạn đang ở trạng thái "CHỜ ADMIN DUYỆT".\n`;
+                msg += `👉 Khi hủy lúc này, bạn sẽ ĐƯỢC HOÀN LẠI 100% TIỀN CỌC (${formatVND(booking.depositPaid)}).\n\n`;
+                msg += `Bạn có chắc chắn muốn hủy đơn đặt phòng này?`;
+            } else if (booking.status === 'Approved') {
+                // Approved status -> Apply deposit forfeiture rules
+                const now = new Date().getTime();
+                const checkInTime = new Date(booking.checkIn).getTime();
+                const hoursUntilCheckin = (checkInTime - now) / (1000 * 60 * 60);
+
+                msg += `🛑 Đơn đặt phòng này ĐÃ ĐƯỢC ADMIN DUYỆT (CONFIRMED).\n\n`;
+
+                if (hoursUntilCheckin < 24) {
+                    msg += `⚠️ CẢNH BÁO HỦY SÁT GIỜ (< 24 tiếng trước thời điểm nhận phòng):\n`;
+                    msg += `Theo quy định, quý khách sẽ MẤT 100% TIỀN CỌC ĐÃ THANH TOÁN (${formatVND(booking.depositPaid)}).\n\n`;
+                } else {
+                    msg += `Quý khách hủy trước 24 giờ nhận phòng. Số tiền cọc ${formatVND(booking.depositPaid)} sẽ được hoàn lại theo chính sách xử lý của khách sạn.\n\n`;
+                }
+
+                msg += `Bạn có chắc chắn muốn tiếp tục hủy đơn đặt phòng?`;
+            }
+
+            if (confirm(msg)) {
+                booking.status = 'Cancelled';
+                saveBookings();
+                renderMyBookings();
+                renderRooms();
+                alert('Đã hủy đơn đặt phòng thành công.');
+            }
+        }
+
+        // ADMIN PANEL LOGIC
+        function renderAdminView() {
+            renderAdminBookingsTable();
+            renderAdminRoomStatus();
+        }
+
+        function renderAdminBookingsTable() {
+            const tbody = document.getElementById('admin-bookings-table');
+            tbody.innerHTML = '';
+
+            if (bookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-stone-400">Chưa có dữ liệu đặt phòng.</td></tr>`;
+                return;
+            }
+
+            bookings.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-50/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <span class="font-mono font-bold text-amber-900">${b.id}</span>
+                        <div class="text-xs font-semibold text-stone-800">${b.customerName}</div>
+                        <div class="text-[10px] text-stone-500">${b.customerPhone}</div>
+                    </td>
+                    <td class="p-3 font-semibold text-stone-800 text-xs">${b.roomName}</td>
+                    <td class="p-3 text-xs">
+                        <div><b>Nhận:</b> ${formatDisplayDate(b.checkIn)}</div>
+                        <div><b>Trả:</b> ${formatDisplayDate(b.checkOut)}</div>
+                    </td>
+                    <td class="p-3 text-xs font-bold text-amber-800 uppercase">${b.bookingType}</td>
+                    <td class="p-3 text-xs">
+                        <div>Tổng: <b>${formatVND(b.totalPrice)}</b></div>
+                        <div class="text-green-700 font-bold">Tiền cọc: ${formatVND(b.depositPaid)}</div>
+                    </td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${b.status === 'Approved' ? 'bg-green-100 text-green-800' : (b.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800 animate-pulse')}">
+                            ${b.status === 'Approved' ? 'Đã Duyệt' : (b.status === 'Cancelled' ? 'Đã Hủy' : 'Chờ Duyệt')}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        ${b.status === 'Pending' ? `
+                            <button onclick="adminApproveBooking('${b.id}')" class="bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold px-2.5 py-1 rounded shadow transition">
+                                Duyệt Phòng
+                            </button>
+                        ` : ''}
+                        ${b.status !== 'Cancelled' ? `
+                            <button onclick="cancelBooking('${b.id}')" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2 py-1 rounded shadow transition">
+                                Hủy Đơn
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function adminApproveBooking(bookingId) {
+            const b = bookings.find(item => item.id === bookingId);
+            if (b) {
+                b.status = 'Approved';
+                saveBookings();
+                renderAdminBookingsTable();
+                renderMyBookings();
+                renderRooms();
+                alert(`✅ Đã DUYỆT phòng thành công cho đơn [${bookingId}].\n\nKể từ lúc này, đơn đặt chuyển sang trạng thái "Đã Duyệt" và sẽ áp dụng trừ tiền cọc nếu khách hủy sát giờ.`);
+            }
+        }
+
+        function renderAdminRoomStatus() {
+            const container = document.getElementById('admin-room-status-grid');
+            container.innerHTML = '';
+
+            rooms.forEach(room => {
+                const activeBookings = getRoomOccupiedSlots(room.id);
+
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-2 text-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center font-bold text-amber-950">
+                        <span class="text-sm">${room.name}</span>
+                        <span class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded text-[10px]">${room.type}</span>
+                    </div>
+
+                    <div class="space-y-1 text-stone-700">
+                        <div><b>Giá theo giờ:</b> ${formatVND(room.priceHourly)}</div>
+                        <div><b>Giá ngày:</b> ${formatVND(room.priceDaily)}</div>
+                        <div><b>Số đơn đặt phòng:</b> <span class="font-bold text-amber-800">${activeBookings.length}</span></div>
+                    </div>
+
+                    ${activeBookings.length > 0 ? `
+                        <div class="p-2 bg-white rounded border border-amber-200 text-[10px] space-y-1">
+                            <span class="font-bold block text-stone-800">Lịch đã ghi nhận:</span>
+                            ${activeBookings.map(s => `<div>• ${s.customerName}: ${formatDisplayDate(s.checkIn)} ➔ ${formatDisplayDate(s.checkOut)} <b class="${s.status === 'Approved' ? 'text-green-700' : 'text-yellow-700'}">(${s.status === 'Approved' ? 'Đã duyệt' : 'Chờ duyệt'})</b></div>`).join('')}
+                        </div>
+                    ` : '<div class="text-[10px] text-green-700 font-semibold">Hiện đang chưa có lịch đặt.</div>'}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // INITIAL ONLOAD
+        window.onload = function() {
+            initData();
+        };
+    </script>
+</body>
+</html>
