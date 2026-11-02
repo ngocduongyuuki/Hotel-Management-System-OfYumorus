@@ -45,7 +45,10 @@ No additional installation is required if the application uses only resources in
 
 ### 📷 Screenshots
 
-Screenshots of the application can be added here.
+<img width="1917" height="1041" alt="image" src="https://github.com/user-attachments/assets/c90380bd-9b94-445b-91cb-762cdd73ce01" />
+<img width="1917" height="1045" alt="image" src="https://github.com/user-attachments/assets/f8486cdf-1c93-424e-bd8a-b25442e18957" />
+<img width="1917" height="1042" alt="image" src="https://github.com/user-attachments/assets/0e38050a-290a-417f-b1f6-6033a60e307c" />
+
 
 ---
 
@@ -85,6 +88,12 @@ Dự án được thực hiện trong khuôn khổ môn học Lập trình Web, 
 3. Mở file `index.html` bằng trình duyệt web để sử dụng.
 
 Không cần cài đặt thêm nếu ứng dụng chỉ sử dụng tài nguyên có sẵn trong file HTML hoặc các thư viện bên ngoài có thể truy cập được.
+### 📷 Screenshots
+<img width="1917" height="1041" alt="image" src="https://github.com/user-attachments/assets/011a7c6e-0eb2-4003-9bf5-ce040da280ee" />
+
+<img width="1917" height="1045" alt="image" src="https://github.com/user-attachments/assets/c87731a0-2cad-4afa-9526-4b1fc36832c9" />
+
+<img width="1917" height="1042" alt="image" src="https://github.com/user-attachments/assets/3c5bd77b-4b51-41e0-9dfa-b5cfb9a2d06d" />
 
 ---
 
